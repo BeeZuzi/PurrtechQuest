@@ -1,0 +1,35 @@
+# PurrtechQuest configuration
+
+storage:
+  # SQLITE (single server, default) or MYSQL (for a network of servers sharing player quest progress).
+  type: SQLITE
+  sqlite-file: data.db
+  # Only read when type is MYSQL. Works against MySQL and MariaDB servers.
+  mysql:
+    host: localhost
+    port: 3306
+    database: purrtechquest
+    username: purrtechquest
+    password: ""
+    pool-size: 10
+    use-ssl: false
+
+# Used when a player's client locale has no matching lang/<locale>.yml. Any file you drop into lang/
+# (plugins/PurrtechQuest/lang/<code>.yml) is picked up automatically — this doesn't need to be one of the
+# two bundled locales (cs/en), it's just which one a player with no matching file falls back to.
+default-locale: en
+
+# Directory (relative to the plugin's data folder) where quest definition YAML files live.
+quests-directory: quests
+
+tracking:
+  # How a player's /quest track'd objective is displayed: ACTION_BAR (default, unobtrusive) or BOSS_BAR.
+  display: ACTION_BAR
+
+# The "guide" item in /quest gui (slot 3, overall progress + current quest breakdown). Its wording and
+# styling live entirely in lang/<locale>.yml under the guide-* keys, so you're free to reskin or reword it —
+# this is just the on/off switch for servers that don't want it at all.
+guide:
+  enabled: true
+
+debug: false

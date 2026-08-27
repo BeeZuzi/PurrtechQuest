@@ -1,0 +1,137 @@
+# Menu layout — for whoever's doing configs, not just admins. Every GUI screen in PurrtechQuest has a
+# hardcoded default size and button placement; anything you set here overrides it.
+#
+# size: how many slots the inventory has. Must be a multiple of 9, 9 to 54 (i.e. 1 to 6 rows). Anything else
+#       is ignored and the screen falls back to its built-in size.
+# slots: button-id -> slot number, 0-indexed, left to right, top to bottom (slot 0 is the top-left corner).
+#        A slot outside "size", or a button-id that doesn't exist on that screen, is ignored — that one
+#        button falls back to its built-in slot, nothing else on the screen is affected. Two buttons landing
+#        on the same slot isn't validated the same way: one will silently cover the other, and a warning
+#        naming both gets logged at startup so you notice.
+#
+# Screens that list a variable number of things (the quest list, an objective list, a reward list, ...) fill
+# their own content slots automatically — only their fixed buttons (back, next page, ...) are listed below.
+# Menu titles aren't here — those come from lang/<locale>.yml, alongside every other player-facing message.
+
+# /quest gui's landing page: the "guide" item + close button.
+quest-category:
+  size: 27
+  slots:
+    guide: 3
+    close: 22
+
+# The quest list (opened from a category, the guide, or an NPC).
+quest-log:
+  size: 54
+  slots:
+    prev-page: 45
+    back: 47
+    next-page: 53
+
+# One quest's detail screen.
+quest-detail:
+  size: 27
+  slots:
+    info: 11
+    rewards: 15
+    back: 18
+    primary-action: 20
+    turn-in: 22
+    track: 24
+    close: 26
+
+# The main /questadmin create|edit hub.
+quest-editor:
+  size: 36
+  slots:
+    name: 1
+    description: 3
+    category: 5
+    sort-order: 7
+    objectives: 10
+    rewards: 13
+    prerequisites: 16
+    repeatable: 19
+    cooldown: 21
+    autostart: 23
+    autoturnin: 25
+    npc: 27
+    permission: 29
+    save: 31
+    cancel: 33
+
+# A quest draft's objective list.
+quest-editor-objectives:
+  size: 27
+  slots:
+    back: 18
+    add: 22
+
+# The "add objective" type picker.
+quest-editor-objective-type:
+  size: 9
+  slots:
+    back: 0
+    type: 4
+    handler: 5
+    continue: 8
+
+# Editing one existing objective's individual fields.
+quest-editor-objective-edit:
+  size: 27
+  slots:
+    label: 1
+    type: 3
+    value: 5
+    amount: 7
+    choice-group: 11
+    back: 18
+
+# A quest draft's prerequisite quest list.
+quest-editor-prerequisites:
+  size: 54
+  slots:
+    back: 45
+    prev-page: 46
+    next-page: 53
+
+# The reward-tier bucket list (base rewards + each rank tier).
+quest-editor-reward-tiers:
+  size: 27
+  slots:
+    base: 0
+    back: 18
+    add: 22
+
+# The "add reward" type picker.
+quest-editor-reward-type:
+  size: 9
+  slots:
+    back: 0
+    type: 4
+    continue: 8
+
+# Importing a reward from a different bucket.
+quest-editor-reward-import:
+  size: 27
+  slots:
+    back: 18
+
+# One reward bucket's item list.
+quest-editor-rewards:
+  size: 27
+  slots:
+    back: 18
+    add: 22
+    name: 26
+
+# /questadmin category's editor.
+quest-category-editor:
+  size: 18
+  slots:
+    description: 1
+    show-active-quest: 3
+    show-progress: 5
+    show-description: 7
+    save: 11
+    cancel: 15

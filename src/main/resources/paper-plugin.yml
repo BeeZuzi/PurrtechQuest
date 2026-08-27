@@ -1,0 +1,59 @@
+name: PurrtechQuest
+version: '${version}'
+
+main: eu.purrtech.purrtechQuest.PurrtechQuest
+api-version: '1.21.11'
+load: POSTWORLD
+
+# All optional — PurrtechQuest works without any of them and only hooks in when present.
+#
+# join-classpath: true is required, not cosmetic: Paper's plugin classloader isolates plugins from each
+# other by default, and the legacy `softdepend:` list does NOT reliably grant classpath visibility (see
+# https://github.com/PaperMC/Paper/issues/9277) even though Bukkit.getPluginManager().isPluginEnabled(...)
+# still correctly reports the plugin as loaded. Without this, referencing any of these plugins' classes
+# throws NoClassDefFoundError at the point of first use, regardless of runtime presence checks.
+dependencies:
+  server:
+    Vault:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Citizens:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    FancyNpcs:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ItemsAdder:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    Oraxen:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    MythicMobs:
+      load: BEFORE
+      required: false
+      join-classpath: true
+    ExcellentShop:
+      load: BEFORE
+      required: false
+      join-classpath: true
+
+permissions:
+  purrtechquest.use:
+    description: Use /quest to view, accept, abandon and turn in quests.
+    default: true
+  purrtechquest.admin:
+    description: Use /questadmin to reload quest definitions and manage player progress.
+    default: op
+  purrtechquest.reward:
+    description: Receive a quest's base rewards on turn-in. Revoke to cut a specific player off from quest rewards entirely.
+    default: true

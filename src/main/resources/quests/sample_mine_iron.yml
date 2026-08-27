@@ -1,0 +1,23 @@
+# Sample quest, extracted on first run so admins have a working example of the format.
+# Delete this file (or edit it) once you understand the shape.
+
+display-name: "Sběr železa"
+description: "Vytěž 10 kusů železné rudy pro kováře ve vesnici."
+category: mining
+repeatable: false
+cooldown-seconds: 0
+auto-start: false
+auto-turn-in: true
+required-quests: []
+
+objectives:
+  - type: COLLECT_ITEM
+    target: RAW_IRON
+    amount: 10
+    label: "Vytěž železnou rudu"
+
+rewards:
+  - type: MONEY
+    amount: 50.0
+  - type: EXPERIENCE
+    amount: 20

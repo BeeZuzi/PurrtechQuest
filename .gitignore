@@ -1,0 +1,14 @@
+# Gradle
+.gradle/
+build/
+
+# IDE
+.idea/
+*.iml
+out/
+
+# Local test server sandbox (run.sh / run-paper task) — plugin jars, worlds, logs, EULA acceptance
+run/
+
+# OS
+.DS_Store

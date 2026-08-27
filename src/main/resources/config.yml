@@ -26,10 +26,11 @@ tracking:
   # How a player's /quest track'd objective is displayed: ACTION_BAR (default, unobtrusive) or BOSS_BAR.
   display: ACTION_BAR
 
-# The "guide" item in /quest gui (slot 3, overall progress + current quest breakdown). Its wording and
-# styling live entirely in lang/<locale>.yml under the guide-* keys, so you're free to reskin or reword it —
-# this is just the on/off switch for servers that don't want it at all.
-guide:
-  enabled: true
+categories:
+  # Quests with no category (or explicitly "default") normally show up directly in /quest gui as their own
+  # icons, alongside your named categories' buttons. Set this to true to instead group them behind their
+  # own "Others" category button, configured the same way as any category you create: /questadmin category
+  # default.
+  others-as-category: false
 
 debug: false

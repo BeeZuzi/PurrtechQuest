@@ -13,14 +13,14 @@
 # their own content slots automatically — only their fixed buttons (back, next page, ...) are listed below.
 # Menu titles aren't here — those come from lang/<locale>.yml, alongside every other player-facing message.
 
-# /quest gui's landing page: the "guide" item + close button.
+# /quest gui's landing page: one button per category (placement configured per category, not here - see
+# /questadmin category <name>) plus the close button below.
 quest-category:
   size: 27
   slots:
-    guide: 3
     close: 22
 
-# The quest list (opened from a category, the guide, or an NPC).
+# The quest list (opened from a category, or an NPC).
 quest-log:
   size: 54
   slots:
@@ -133,5 +133,7 @@ quest-category-editor:
     show-active-quest: 3
     show-progress: 5
     show-description: 7
+    slot: 9
     save: 11
+    icon: 13
     cancel: 15

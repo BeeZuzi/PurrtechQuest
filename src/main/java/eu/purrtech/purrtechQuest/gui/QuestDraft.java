@@ -56,7 +56,7 @@ public final class QuestDraft {
     private final String id;
     private String displayName;
     private String description = "";
-    private String category = "default";
+    private String category = Quest.DEFAULT_CATEGORY;
     private final List<QuestObjective> objectives = new ArrayList<>();
     private final List<QuestReward> rewards = new ArrayList<>();
     private final List<RewardTierDraft> rewardTiers = new ArrayList<>();

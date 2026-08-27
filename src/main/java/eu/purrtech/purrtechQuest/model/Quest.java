@@ -35,6 +35,9 @@ public record Quest(
         Integer sortOrder
 ) {
 
+    /** The category a quest falls into when none was ever set — see {@code QuestCategoryGui}'s "Others" bucket. */
+    public static final String DEFAULT_CATEGORY = "default";
+
     /**
      * How {@code QuestLogGui} (and anywhere else quests are listed to a player) orders them: quests with an
      * explicit {@link #sortOrder} come first, lowest number first; quests with none set sort after all of
@@ -52,7 +55,7 @@ public record Quest(
         }
         Objects.requireNonNull(displayName, "displayName");
         description = description == null ? "" : description;
-        category = category == null || category.isBlank() ? "default" : category;
+        category = category == null || category.isBlank() ? DEFAULT_CATEGORY : category;
         if (objectives == null || objectives.isEmpty()) {
             throw new IllegalArgumentException("quest '" + id + "' must have at least one objective");
         }

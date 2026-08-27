@@ -6,7 +6,6 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import eu.purrtech.purrtechQuest.config.MenuLayoutConfig;
 import eu.purrtech.purrtechQuest.config.MessagesConfig;
 import eu.purrtech.purrtechQuest.gui.QuestCategoryGui;
-import eu.purrtech.purrtechQuest.gui.QuestLogGui;
 import eu.purrtech.purrtechQuest.model.ChoiceGroups;
 import eu.purrtech.purrtechQuest.model.PlayerQuestData;
 import eu.purrtech.purrtechQuest.model.Quest;
@@ -17,6 +16,7 @@ import eu.purrtech.purrtechQuest.service.QuestFeedback;
 import eu.purrtech.purrtechQuest.service.QuestService;
 import eu.purrtech.purrtechQuest.service.QuestStatusText;
 import eu.purrtech.purrtechQuest.service.QuestTrackingService;
+import eu.purrtech.purrtechQuest.storage.CategoryConfigRepository;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.command.CommandSender;
@@ -42,16 +42,17 @@ public final class QuestCommand {
     public static LiteralCommandNode<CommandSourceStack> build(QuestService questService,
                                                                  PlayerQuestDataCache playerCache,
                                                                  QuestTrackingService trackingService,
-                                                                 boolean guideEnabled,
+                                                                 CategoryConfigRepository categoryConfigRepository,
+                                                                 boolean othersAsCategory,
                                                                  MenuLayoutConfig menuLayouts,
                                                                  MessagesConfig messages) {
         return Commands.literal("quest")
                 .requires(source -> source.getSender().hasPermission("purrtechquest.use"))
                 .executes(ctx -> openGui(ctx.getSource().getSender(), questService, playerCache, trackingService,
-                        guideEnabled, menuLayouts, messages))
+                        categoryConfigRepository, othersAsCategory, menuLayouts, messages))
                 .then(Commands.literal("gui")
                         .executes(ctx -> openGui(ctx.getSource().getSender(), questService, playerCache, trackingService,
-                                guideEnabled, menuLayouts, messages)))
+                                categoryConfigRepository, othersAsCategory, menuLayouts, messages)))
                 .then(Commands.literal("list")
                         .executes(ctx -> list(ctx.getSource().getSender(), questService, playerCache, messages)))
                 .then(Commands.literal("info")
@@ -184,20 +185,14 @@ public final class QuestCommand {
     }
 
     private static int openGui(CommandSender sender, QuestService questService, PlayerQuestDataCache playerCache,
-                                QuestTrackingService trackingService, boolean guideEnabled,
-                                MenuLayoutConfig menuLayouts, MessagesConfig messages) {
+                                QuestTrackingService trackingService, CategoryConfigRepository categoryConfigRepository,
+                                boolean othersAsCategory, MenuLayoutConfig menuLayouts, MessagesConfig messages) {
         Player player = requirePlayer(sender, messages);
         if (player == null) {
             return 0;
         }
-        if (guideEnabled) {
-            new QuestCategoryGui(questService, playerCache, trackingService, menuLayouts, messages, player).open(player);
-        } else {
-            // No guide category screen to land on - go straight to the full quest list, same as before
-            // that screen existed.
-            new QuestLogGui(questService, playerCache, trackingService, menuLayouts, messages, player,
-                    List.copyOf(questService.allQuests()), null).open(player);
-        }
+        new QuestCategoryGui(questService, playerCache, trackingService, menuLayouts, categoryConfigRepository,
+                othersAsCategory, messages, player).open(player);
         return 1;
     }
 

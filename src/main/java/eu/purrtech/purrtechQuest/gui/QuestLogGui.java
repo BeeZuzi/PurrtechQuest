@@ -82,7 +82,7 @@ public final class QuestLogGui extends Gui {
         for (int i = from; i < to; i++) {
             Quest quest = quests.get(i);
             QuestProgress progress = data == null ? null : data.progress(quest.id());
-            setItem(i - from, questIcon(quest, progress), event ->
+            setItem(i - from, questIcon(quest, progress, messages, player), event ->
                     new QuestDetailGui(questService, playerCache, trackingService, menuLayouts, messages, player,
                             quest.id(), this::reopen).open(player));
         }
@@ -115,7 +115,8 @@ public final class QuestLogGui extends Gui {
         }
     }
 
-    private ItemStack questIcon(Quest quest, QuestProgress progress) {
+    /** Package-private so {@link QuestCategoryGui} can reuse it for the loose (uncategorized) quests it lists directly. */
+    static ItemStack questIcon(Quest quest, QuestProgress progress, MessagesConfig messages, Player player) {
         QuestStatus status = progress == null ? QuestStatus.NOT_ACCEPTED : progress.status();
         Material material = QuestIcons.materialFor(status);
         String statusText = messages.get(QuestStatusText.key(progress), player.locale().getLanguage());

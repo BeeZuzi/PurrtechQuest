@@ -214,7 +214,7 @@ public final class PurrtechQuest extends JavaPlugin {
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             var registrar = event.registrar();
             registrar.register(QuestCommand.build(questService, playerQuestDataCache, questTrackingService,
-                    pluginConfig.guideEnabled(), menuLayoutConfig, messagesConfig),
+                    categoryConfigRepository, pluginConfig.othersAsCategory(), menuLayoutConfig, messagesConfig),
                     "PurrtechQuest player commands");
             registrar.register(QuestAdminCommand.build(questService, questDefinitionRepository, chatInputService,
                     npcLinkService, objectiveHandlerRegistry, trackerRegistrationManager, questPermissionRegistrar,

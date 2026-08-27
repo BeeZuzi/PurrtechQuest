@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -42,7 +43,9 @@ public final class CategoryConfigRepository {
                     section.getString("description", ""),
                     section.getBoolean("show-active-quest", true),
                     section.getBoolean("show-progress", true),
-                    section.getBoolean("show-description", true)));
+                    section.getBoolean("show-description", true),
+                    section.isSet("slot") ? section.getInt("slot") : null,
+                    section.getString("icon", "CHEST")));
         }
     }
 
@@ -50,9 +53,31 @@ public final class CategoryConfigRepository {
         return configs.getOrDefault(categoryId, QuestCategoryConfig.defaults(categoryId));
     }
 
+    /**
+     * Saves {@code config}. If {@code config.slot()} is set and some *other* already-configured category
+     * currently sits on that same slot, the two swap — that other category takes whatever slot
+     * {@code config.id()} previously had (possibly none) — rather than the new save silently colliding with
+     * it. Two categories landing on the same slot only ever happens here as a momentary in-between state,
+     * never as something both end up keeping.
+     */
     public void save(QuestCategoryConfig config) {
+        Integer newSlot = config.slot();
+        if (newSlot != null) {
+            Integer previousSlot = get(config.id()).slot();
+            for (QuestCategoryConfig other : new ArrayList<>(configs.values())) {
+                if (!other.id().equals(config.id()) && newSlot.equals(other.slot())) {
+                    configs.put(other.id(), withSlot(other, previousSlot));
+                    break;
+                }
+            }
+        }
         configs.put(config.id(), config);
         persist();
+    }
+
+    private static QuestCategoryConfig withSlot(QuestCategoryConfig config, Integer slot) {
+        return new QuestCategoryConfig(config.id(), config.description(), config.showActiveQuest(),
+                config.showProgress(), config.showDescription(), slot, config.icon());
     }
 
     private void persist() {
@@ -62,6 +87,10 @@ public final class CategoryConfigRepository {
             yaml.set(config.id() + ".show-active-quest", config.showActiveQuest());
             yaml.set(config.id() + ".show-progress", config.showProgress());
             yaml.set(config.id() + ".show-description", config.showDescription());
+            yaml.set(config.id() + ".icon", config.icon());
+            if (config.slot() != null) {
+                yaml.set(config.id() + ".slot", config.slot());
+            }
         }
         try {
             Files.createDirectories(file.getParent());

@@ -153,7 +153,8 @@ public final class QuestService {
 
     /**
      * The first quest the player currently has {@code IN_PROGRESS}, across every loaded quest rather than
-     * one category — what {@code QuestCategoryGui}'s guide item highlights as "what to do next".
+     * one category — exposed via {@link eu.purrtech.purrtechQuest.api.PurrtechQuestAPI} for integrations
+     * that want "what should this player do next" without caring about categories.
      */
     public Optional<Quest> currentActiveQuest(Player player) {
         PlayerQuestData data = playerCache.get(player.getUniqueId());
@@ -169,7 +170,7 @@ public final class QuestService {
         return Optional.empty();
     }
 
-    /** Turned-in count vs. total across every loaded quest — the guide item's overall completion line. */
+    /** Turned-in count vs. total across every loaded quest, regardless of category. */
     public record OverallSummary(int turnedIn, int total) {
     }
 

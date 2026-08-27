@@ -45,23 +45,23 @@ class MessagesConfigTest {
     }
 
     @Test
-    void revertsThePreviouslyForcedCzechGuideTextBackToEnglish(@TempDir Path tempDir) throws IOException {
+    void revertsThePreviouslyForcedFontGlyphCategoryTitleBackToEnglish(@TempDir Path tempDir) throws IOException {
         Path dataFolder = tempDir.resolve("plugin-data");
         writeLangFile(dataFolder, "en", """
                 quest:
-                  guide-completed: "<#F69B45><b>●</b></#F69B45> <white>ꜱᴘʟɴěɴýᴄʜ Qᴜᴇꜱᴛů: <#F8AF69>%done%</#F8AF69><dark_gray>/</dark_gray><#F69B45>%total%</#F69B45></white>"
+                  gui-category-title: "<white>:offset_-8::ukoly:</white>"
                 """);
 
         MessagesConfig messages = MessagesConfig.load(mockPlugin(dataFolder), "cs");
 
-        // The guide item used to be forced to always read in Czech regardless of a player's client locale,
-        // which fought against the rest of the plugin respecting each player's own language. A server that
-        // had already picked up that forced-Czech text via this same self-healing mechanism needs it to
-        // come back to normal localized English on the next load - "guide-completed" isn't a missing key,
-        // just an outdated value, so mergeMissingKeys alone can't fix it.
-        String revertedValue = messages.get("quest.guide-completed", "en");
-        assertTrue(revertedValue.contains("Quests completed"), "forced Czech guide text should have reverted to English");
-        assertTrue(!revertedValue.contains("ꜱᴘʟɴěɴýᴄʜ"), "forced Czech wording should no longer be present");
+        // The category screen's title used to be forced to a resourcepack-specific font-glyph token
+        // regardless of a player's client locale, then reverted back to normal localized English. A server
+        // that had already picked up that forced value via this same self-healing mechanism needs it to
+        // come back on the next load - "gui-category-title" isn't a missing key, just an outdated value, so
+        // mergeMissingKeys alone can't fix it.
+        String revertedValue = messages.get("quest.gui-category-title", "en");
+        assertTrue(revertedValue.contains("Quest categories"), "forced font-glyph title should have reverted to English");
+        assertTrue(!revertedValue.contains("offset_-8"), "forced font-glyph token should no longer be present");
     }
 
     @Test

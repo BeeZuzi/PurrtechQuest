@@ -30,7 +30,6 @@ class MenuLayoutConfigTest {
         MenuLayoutConfig config = MenuLayoutConfig.load(mockPlugin(dataFolder));
 
         assertEquals(27, config.resolveSize("quest-category", -1));
-        assertEquals(3, config.resolveSlot("quest-category", "guide", -1, 27));
         assertEquals(22, config.resolveSlot("quest-category", "close", -1, 27));
     }
 

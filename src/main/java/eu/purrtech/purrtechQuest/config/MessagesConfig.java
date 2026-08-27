@@ -37,14 +37,14 @@ public final class MessagesConfig {
      * still matches the exact old default below — any admin customization, even a small tweak, is left
      * alone, same as everywhere else in this file.
      * <p>
-     * The {@code guide-*}/{@code gui-category-title} entries under {@code "en"} cover a two-step history on
-     * those specific keys: the guide item's English text was briefly forced to the same small-caps Czech
-     * text {@code cs.yml} uses (and the category title to a resourcepack-specific font-glyph token), then
-     * reverted back to normal localized English once that turned out to fight against players just wanting
-     * their own client locale respected like every other message in this plugin. A server that had already
-     * picked up the Czech-forced values via this same self-healing mechanism needs this second entry to
-     * come back — its on-disk {@code en.yml} has the Czech text sitting in it, not the original English, so
-     * the plain "old English -> new English" pairing below wouldn't match it.
+     * The {@code gui-category-title} entry under {@code "en"} covers a two-step history on that specific
+     * key: its English text was briefly forced to a resourcepack-specific font-glyph token (matching a
+     * short-lived styling choice on the "guide" item this screen used to hold, since removed entirely — see
+     * {@code QuestCategoryGui}), then reverted back to normal localized English once that turned out to
+     * fight against players just wanting their own client locale respected like every other message in this
+     * plugin. A server that had already picked up the forced value via this same self-healing mechanism
+     * needs this entry to come back — its on-disk {@code en.yml} has the glyph token sitting in it, not the
+     * original English, so a plain "old English -> new English" pairing wouldn't match it.
      */
     private static final Map<String, Map<String, String>> STALE_DEFAULTS = Map.of(
             "en", Map.ofEntries(
@@ -55,13 +55,6 @@ public final class MessagesConfig {
                     Map.entry("quest.gui-lore-objective-line", "<gray> - %type% %target%: %progress%/%amount%</gray>"),
                     Map.entry("quest.gui-lore-objective-choice-line", "<yellow> - (choice) %type% %target%: %progress%/%amount%</yellow>"),
                     Map.entry("quest.gui-lore-objective-locked", "<dark_gray> - %type% %target% (unavailable, a different choice was completed)</dark_gray>"),
-                    Map.entry("quest.guide-name", "<#F69B45><b>ᴘʀůᴠᴏᴅᴄᴇ</b></#F69B45>"),
-                    Map.entry("quest.guide-intro", "<gray><i>ᴘʀᴏᴠᴇᴅᴇ ᴛě ᴘᴏꜱᴛᴜᴘɴě ꜱᴇʀᴠᴇʀᴇᴍ</i></gray>"),
-                    Map.entry("quest.guide-completed", "<#F69B45><b>●</b></#F69B45> <white>ꜱᴘʟɴěɴýᴄʜ Qᴜᴇꜱᴛů: <#F8AF69>%done%</#F8AF69><dark_gray>/</dark_gray><#F69B45>%total%</#F69B45></white>"),
-                    Map.entry("quest.guide-current-quest-header", "<#F69B45><b>ᴀᴋᴛᴜáʟɴí úᴋᴏʟ:</b></#F69B45>"),
-                    Map.entry("quest.guide-no-active-quest", "<#F69B45><b>●</b></#F69B45>  <gray>Žádný aktivní quest</gray>"),
-                    Map.entry("quest.guide-progress-header", "<#F69B45><b>●</b></#F69B45>  <white>ᴘᴏsᴛᴜᴘ úᴋᴏʟᴜ:</white>"),
-                    Map.entry("quest.gui-lore-guide-hint", "<dark_gray>Klikni pro zobrazení všech questů.</dark_gray>"),
                     Map.entry("quest.gui-category-title", "<white>:offset_-8::ukoly:</white>")),
             "cs", Map.ofEntries(
                     Map.entry("quest.info-objective", "<gray>- %type% %target%: %progress%/%amount%</gray>"),

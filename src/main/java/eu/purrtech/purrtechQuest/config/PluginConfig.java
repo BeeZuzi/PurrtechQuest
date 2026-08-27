@@ -12,11 +12,11 @@ public final class PluginConfig {
     private final String questsDirectoryName;
     private final TrackingDisplay trackingDisplay;
     private final boolean debug;
-    private final boolean guideEnabled;
+    private final boolean othersAsCategory;
 
     private PluginConfig(StorageType storageType, String sqliteFileName, MySqlSettings mysql, String defaultLocale,
                           String questsDirectoryName, TrackingDisplay trackingDisplay, boolean debug,
-                          boolean guideEnabled) {
+                          boolean othersAsCategory) {
         this.storageType = storageType;
         this.sqliteFileName = sqliteFileName;
         this.mysql = mysql;
@@ -24,7 +24,7 @@ public final class PluginConfig {
         this.questsDirectoryName = questsDirectoryName;
         this.trackingDisplay = trackingDisplay;
         this.debug = debug;
-        this.guideEnabled = guideEnabled;
+        this.othersAsCategory = othersAsCategory;
     }
 
     public static PluginConfig load(JavaPlugin plugin) {
@@ -48,10 +48,10 @@ public final class PluginConfig {
         TrackingDisplay trackingDisplay = TrackingDisplay.valueOf(
                 config.getString("tracking.display", "ACTION_BAR").toUpperCase());
         boolean debug = config.getBoolean("debug", false);
-        boolean guideEnabled = config.getBoolean("guide.enabled", true);
+        boolean othersAsCategory = config.getBoolean("categories.others-as-category", false);
 
         return new PluginConfig(storageType, sqliteFileName, mysql, defaultLocale, questsDirectoryName,
-                trackingDisplay, debug, guideEnabled);
+                trackingDisplay, debug, othersAsCategory);
     }
 
     public StorageType storageType() {
@@ -82,7 +82,7 @@ public final class PluginConfig {
         return debug;
     }
 
-    public boolean guideEnabled() {
-        return guideEnabled;
+    public boolean othersAsCategory() {
+        return othersAsCategory;
     }
 }

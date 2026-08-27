@@ -70,9 +70,7 @@ public final class QuestEditorGui extends Gui {
         var messages = context.messages();
         var chatInput = context.chatInput();
 
-        for (int slot = 0; slot < getInventory().getSize(); slot++) {
-            setItem(slot, GuiItems.filler(), null);
-        }
+        fillEmptySlots(context.menuLayouts(), 0, getInventory().getSize());
 
         setItem(nameSlot, GuiItems.icon(Material.NAME_TAG,
                         messages.render("quest.editor-button-name", player, Map.of("%value%", draft.displayName())),

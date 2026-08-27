@@ -12,6 +12,12 @@
 # Screens that list a variable number of things (the quest list, an objective list, a reward list, ...) fill
 # their own content slots automatically — only their fixed buttons (back, next page, ...) are listed below.
 # Menu titles aren't here — those come from lang/<locale>.yml, alongside every other player-facing message.
+#
+# Edits here (and to lang/<locale>.yml) take effect on the next /questadmin reload — no server restart needed.
+
+# Whether a screen's otherwise-empty slots get the gray glass pane filler item. Set to false if you'd rather
+# see plain empty slots than filler everywhere.
+fill-empty-slots: true
 
 # /quest gui's landing page: one button per category (placement configured per category, not here - see
 # /questadmin category <name>) plus the close button below.

@@ -17,7 +17,7 @@ quest:
   data-not-loaded: "<red>Tvá data se ještě načítají, zkus to za chvíli znovu.</red>"
   console-only: "<red>Tento příkaz může použít jen hráč.</red>"
   no-permission: "<red>Na tento příkaz nemáš oprávnění.</red>"
-  reloaded: "<green>Definice questů byly znovu načteny (%count% questů).</green>"
+  reloaded: "<green>Znovu načteny definice questů (%count% questů), jazykové soubory i rozložení menu.</green>"
   admin-give-success: "<green>Hráči <white>%player%</white> byl nastaven quest <white>%quest%</white>.</green>"
   admin-give-failure: "<red>Quest se nepodařilo nastavit (neplatný quest, hráč nebo už je rozpracovaný).</red>"
   admin-reset-success: "<green>Postup hráče <white>%player%</white> u questu <white>%quest%</white> byl vymazán.</green>"

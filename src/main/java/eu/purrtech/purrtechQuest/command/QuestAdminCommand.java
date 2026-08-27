@@ -60,7 +60,7 @@ public final class QuestAdminCommand {
                 .requires(source -> source.getSender().hasPermission("purrtechquest.admin"))
                 .then(Commands.literal("reload")
                         .executes(ctx -> reload(ctx.getSource().getSender(), questService, trackerRegistrationManager,
-                                questPermissionRegistrar, messages)))
+                                questPermissionRegistrar, menuLayouts, messages)))
                 .then(Commands.literal("give")
                         .then(Commands.argument("player", ArgumentTypes.player())
                                 .then(questIdArgument(questService)
@@ -132,7 +132,10 @@ public final class QuestAdminCommand {
 
     private static int reload(CommandSender sender, QuestService questService,
                                TrackerRegistrationManager trackerRegistrationManager,
-                               QuestPermissionRegistrar questPermissionRegistrar, MessagesConfig messages) {
+                               QuestPermissionRegistrar questPermissionRegistrar, MenuLayoutConfig menuLayouts,
+                               MessagesConfig messages) {
+        messages.reload();
+        menuLayouts.reload();
         questService.reload();
         trackerRegistrationManager.refresh();
         questPermissionRegistrar.refresh();

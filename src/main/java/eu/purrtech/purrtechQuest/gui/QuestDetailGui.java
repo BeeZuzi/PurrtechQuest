@@ -40,6 +40,7 @@ public final class QuestDetailGui extends Gui {
     private final QuestService questService;
     private final PlayerQuestDataCache playerCache;
     private final QuestTrackingService trackingService;
+    private final MenuLayoutConfig menuLayouts;
     private final MessagesConfig messages;
     private final Player player;
     private final String questId;
@@ -61,6 +62,7 @@ public final class QuestDetailGui extends Gui {
         this.questService = questService;
         this.playerCache = playerCache;
         this.trackingService = trackingService;
+        this.menuLayouts = menuLayouts;
         this.messages = messages;
         this.player = player;
         this.questId = questId;
@@ -88,9 +90,7 @@ public final class QuestDetailGui extends Gui {
         QuestProgress progress = data == null ? null : data.progress(questId);
         QuestStatus status = progress == null ? QuestStatus.NOT_ACCEPTED : progress.status();
 
-        for (int slot = 0; slot < getInventory().getSize(); slot++) {
-            setItem(slot, GuiItems.filler(), null);
-        }
+        fillEmptySlots(menuLayouts, 0, getInventory().getSize());
 
         setItem(infoSlot, infoIcon(quest, progress, status), null);
         setItem(rewardsSlot, rewardsIcon(quest), null);

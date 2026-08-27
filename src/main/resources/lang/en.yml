@@ -17,7 +17,7 @@ quest:
   data-not-loaded: "<red>Your data is still loading, try again in a moment.</red>"
   console-only: "<red>Only a player can use this command.</red>"
   no-permission: "<red>You don't have permission to use this command.</red>"
-  reloaded: "<green>Quest definitions reloaded (%count% quests).</green>"
+  reloaded: "<green>Reloaded quest definitions (%count% quests), language files, and menu layout.</green>"
   admin-give-success: "<green>Set quest <white>%quest%</white> for player <white>%player%</white>.</green>"
   admin-give-failure: "<red>Could not set the quest (invalid quest, player, or already in progress).</red>"
   admin-reset-success: "<green>Cleared <white>%player%</white>'s progress on <white>%quest%</white>.</green>"

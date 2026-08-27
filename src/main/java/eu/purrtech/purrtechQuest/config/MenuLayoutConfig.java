@@ -26,26 +26,37 @@ import java.util.Map;
  * rather than producing a broken or throwing GUI. Two buttons landing on the same custom slot isn't
  * rejected the same way (there's no single "correct" resolution), but is logged as a warning at startup so
  * a technician notices instead of wondering why a button vanished.
+ * <p>
+ * {@link #reload()} re-reads the file from disk in place, so a technician's edit — a moved button, a
+ * resized menu, {@link #fillEmptySlots()} toggled off — takes effect on the next {@code /questadmin reload}
+ * rather than needing a full server restart. Every {@code Gui} already holds a reference to the single
+ * shared instance of this class (see {@code PurrtechQuest}'s field), so reloading in place is enough; no
+ * screen needs to be told about it separately.
  */
 public final class MenuLayoutConfig {
 
     private static final String RESOURCE_PATH = "menus.yml";
 
+    private final JavaPlugin plugin;
     private final Map<String, Menu> menus = new HashMap<>();
+    private boolean fillEmptySlots = true;
 
     private record Menu(int size, Map<String, Integer> slots) {
     }
 
-    private MenuLayoutConfig() {
+    private MenuLayoutConfig(JavaPlugin plugin) {
+        this.plugin = plugin;
     }
 
     public static MenuLayoutConfig load(JavaPlugin plugin) {
-        MenuLayoutConfig config = new MenuLayoutConfig();
-        config.doLoad(plugin);
+        MenuLayoutConfig config = new MenuLayoutConfig(plugin);
+        config.reload();
         return config;
     }
 
-    private void doLoad(JavaPlugin plugin) {
+    /** Re-reads {@code menus.yml} from disk, discarding whatever was previously loaded. See the class javadoc. */
+    public void reload() {
+        menus.clear();
         File file = new File(plugin.getDataFolder(), RESOURCE_PATH);
         boolean isNewFile = !file.exists();
         if (isNewFile) {
@@ -63,8 +74,10 @@ public final class MenuLayoutConfig {
 
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         if (!isNewFile) {
-            mergeMissingKeys(plugin, file, config);
+            mergeMissingKeys(file, config);
         }
+
+        this.fillEmptySlots = config.getBoolean("fill-empty-slots", true);
 
         for (String menuId : config.getKeys(false)) {
             ConfigurationSection section = config.getConfigurationSection(menuId);
@@ -80,12 +93,12 @@ public final class MenuLayoutConfig {
                 }
             }
             menus.put(menuId, new Menu(size, slots));
-            warnAboutCollisions(plugin, menuId, slots);
+            warnAboutCollisions(menuId, slots);
         }
     }
 
     /** Same "fill in what's missing, never touch what's already there" behavior as {@code MessagesConfig}. */
-    private void mergeMissingKeys(JavaPlugin plugin, File file, YamlConfiguration config) {
+    private void mergeMissingKeys(File file, YamlConfiguration config) {
         try (InputStream in = plugin.getResource(RESOURCE_PATH)) {
             if (in == null) {
                 return;
@@ -108,7 +121,7 @@ public final class MenuLayoutConfig {
         }
     }
 
-    private void warnAboutCollisions(JavaPlugin plugin, String menuId, Map<String, Integer> slots) {
+    private void warnAboutCollisions(String menuId, Map<String, Integer> slots) {
         Map<Integer, String> seen = new HashMap<>();
         for (Map.Entry<String, Integer> entry : slots.entrySet()) {
             String previous = seen.putIfAbsent(entry.getValue(), entry.getKey());
@@ -142,5 +155,16 @@ public final class MenuLayoutConfig {
             return fallback;
         }
         return slot;
+    }
+
+    /**
+     * Whether a screen's otherwise-empty slots should get the gray-glass-pane filler item, top-level
+     * {@code fill-empty-slots} in {@code menus.yml} (default {@code true}, matching every screen's behavior
+     * before this existed). Only covers actual leftover empty space — a slot a screen deliberately leaves
+     * blank because a specific button doesn't apply right now (e.g. an objective type with no editable
+     * amount) is unaffected either way.
+     */
+    public boolean fillEmptySlots() {
+        return fillEmptySlots;
     }
 }

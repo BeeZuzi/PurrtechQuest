@@ -1,5 +1,6 @@
 package eu.purrtech.purrtechQuest.gui;
 
+import eu.purrtech.purrtechQuest.config.MenuLayoutConfig;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -43,6 +44,33 @@ public abstract class Gui implements InventoryHolder {
     protected void clear() {
         inventory.clear();
         handlers.clear();
+    }
+
+    /**
+     * Fills every slot in {@code [fromInclusive, toExclusive)} with {@link GuiItems#filler()}, unless
+     * {@link MenuLayoutConfig#fillEmptySlots()} is off — a technician's global "no filler" preference in
+     * {@code menus.yml}. For screens whose leftover empty space isn't one contiguous range, see the
+     * {@code boolean[]} overload below.
+     */
+    protected void fillEmptySlots(MenuLayoutConfig menuLayouts, int fromInclusive, int toExclusive) {
+        if (!menuLayouts.fillEmptySlots()) {
+            return;
+        }
+        for (int slot = fromInclusive; slot < toExclusive; slot++) {
+            setItem(slot, GuiItems.filler(), null);
+        }
+    }
+
+    /** Same as {@link #fillEmptySlots(MenuLayoutConfig, int, int)}, for a screen tracking occupancy per slot directly. */
+    protected void fillEmptySlots(MenuLayoutConfig menuLayouts, boolean[] occupied) {
+        if (!menuLayouts.fillEmptySlots()) {
+            return;
+        }
+        for (int slot = 0; slot < occupied.length; slot++) {
+            if (!occupied[slot]) {
+                setItem(slot, GuiItems.filler(), null);
+            }
+        }
     }
 
     void handleClick(InventoryClickEvent event) {

@@ -87,9 +87,7 @@ public final class QuestLogGui extends Gui {
                             quest.id(), this::reopen).open(player));
         }
 
-        for (int slot = pageSize; slot < getInventory().getSize(); slot++) {
-            setItem(slot, GuiItems.filler(), null);
-        }
+        fillEmptySlots(menuLayouts, pageSize, getInventory().getSize());
         if (page > 0) {
             setItem(prevSlot, GuiItems.icon(Material.ARROW,
                     messages.render("quest.gui-button-prev-page", player, Map.of()),

@@ -135,11 +135,7 @@ public final class QuestCategoryGui extends Gui {
             }
         }
 
-        for (int slot = 0; slot < size; slot++) {
-            if (!occupied[slot]) {
-                setItem(slot, GuiItems.filler(), null);
-            }
-        }
+        fillEmptySlots(menuLayouts, occupied);
 
         setItem(closeSlot, GuiItems.icon(Material.BARRIER, messages.render("quest.gui-button-close", player, Map.of()),
                         List.of(messages.render("quest.gui-button-close-hint", player, Map.of()))),

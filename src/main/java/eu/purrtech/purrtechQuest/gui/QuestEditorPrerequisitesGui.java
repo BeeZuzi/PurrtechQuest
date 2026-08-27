@@ -73,9 +73,7 @@ public final class QuestEditorPrerequisitesGui extends Gui {
             });
         }
 
-        for (int slot = pageSize; slot < getInventory().getSize(); slot++) {
-            setItem(slot, GuiItems.filler(), null);
-        }
+        fillEmptySlots(context.menuLayouts(), pageSize, getInventory().getSize());
         setItem(backSlot, GuiItems.icon(Material.ARROW, messages.render("quest.gui-button-back", player, Map.of()),
                         List.of(messages.render("quest.gui-button-back-hint", player, Map.of()))),
                 event -> new QuestEditorGui(context, player, draft).open(player));

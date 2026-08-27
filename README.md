@@ -39,7 +39,7 @@ No other setup is required. Everything below is optional.
 | `/questadmin create <id>` | Opens the GUI editor to build a new quest. |
 | `/questadmin edit <quest>` | Opens the GUI editor on an existing quest. |
 | `/questadmin delete <quest>` | Deletes a quest definition. |
-| `/questadmin reload` | Reloads quest definitions from disk. |
+| `/questadmin reload` | Reloads quest definitions, `lang/*.yml`, and `menus.yml` from disk — no server restart needed for any of them. |
 | `/questadmin give <player> <quest>` | Force-accepts a quest for a player, bypassing prerequisites/cooldown. |
 | `/questadmin reset <player> <quest>` | Wipes a player's progress on a quest. |
 | `/questadmin npclink <quest>` / `npcunlink <quest>` | Links/unlinks a quest to a Citizens or FancyNpcs NPC (right-click the NPC in-world to confirm). |
@@ -67,12 +67,14 @@ PurrtechQuest ships `lang/cs.yml` and `lang/en.yml`. Every player sees messages 
 automatically if a matching file exists, `default-locale` otherwise — this needs no server restart or admin
 action, it just works per player.
 
-To add another language, drop a `lang/<code>.yml` into the plugin's data folder (e.g. `lang/de.yml`) using
-one of the bundled files as a template — it's picked up automatically on the next start, no plugin update or
-code change required. The two bundled locales additionally self-heal: if a plugin update adds a new message
-key or changes what an existing one expects, your on-disk `cs.yml`/`en.yml` gets the missing keys filled in
-automatically (any key you've already customized is left untouched). A locale you add yourself doesn't have
-a bundled file to self-heal against, so keep an eye on the changelog for new keys when you update.
+Editing any message text takes effect on the next `/questadmin reload` — no server restart needed. To add
+another language, drop a `lang/<code>.yml` into the plugin's data folder (e.g. `lang/de.yml`) using one of
+the bundled files as a template; it's picked up the same way, on the next `/questadmin reload` (or server
+start), no plugin update or code change required. The two bundled locales additionally self-heal: if a
+plugin update adds a new message key or changes what an existing one expects, your on-disk `cs.yml`/`en.yml`
+gets the missing keys filled in automatically (any key you've already customized is left untouched). A
+locale you add yourself doesn't have a bundled file to self-heal against, so keep an eye on the changelog
+for new keys when you update.
 
 ## Menu layout
 
@@ -99,7 +101,11 @@ on your quests — each one's placement and icon are configured per category ins
 `/questadmin category <name>` (see [Quest editor basics](#quest-editor-basics)).
 
 `menus.yml` self-heals the same way `lang/*.yml` does: a plugin update that adds a new menu or button never
-overwrites a value you've already customized, only fills in what's missing.
+overwrites a value you've already customized, only fills in what's missing. Like `lang/*.yml`, edits here
+take effect on the next `/questadmin reload` — no server restart needed.
+
+A top-level `fill-empty-slots: true` toggles the gray glass pane filler every screen puts in its otherwise-
+empty slots; set it to `false` if you'd rather see plain empty slots instead.
 
 ## Quest editor basics
 

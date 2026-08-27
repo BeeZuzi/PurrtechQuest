@@ -71,9 +71,7 @@ public final class QuestCategoryEditorGui extends Gui {
         var messages = context.messages();
         var chatInput = context.chatInput();
 
-        for (int slot = 0; slot < getInventory().getSize(); slot++) {
-            setItem(slot, GuiItems.filler(), null);
-        }
+        fillEmptySlots(context.menuLayouts(), 0, getInventory().getSize());
 
         setItem(descriptionSlot, GuiItems.icon(Material.WRITTEN_BOOK,
                         messages.render("quest.editor-button-description", player, Map.of()),

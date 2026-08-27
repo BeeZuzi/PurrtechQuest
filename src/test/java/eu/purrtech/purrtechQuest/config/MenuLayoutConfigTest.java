@@ -116,6 +116,59 @@ class MenuLayoutConfigTest {
         assertTrue(stillOnDisk.contains("guide: 5"), "an admin's custom slot must not be overwritten by the merge");
     }
 
+    @Test
+    void fillEmptySlotsDefaultsToTrue(@TempDir Path tempDir) {
+        Path dataFolder = tempDir.resolve("plugin-data");
+        MenuLayoutConfig config = MenuLayoutConfig.load(mockPlugin(dataFolder));
+
+        assertTrue(config.fillEmptySlots());
+    }
+
+    @Test
+    void fillEmptySlotsCanBeTurnedOff(@TempDir Path tempDir) throws IOException {
+        Path dataFolder = tempDir.resolve("plugin-data");
+        writeMenusFile(dataFolder, """
+                fill-empty-slots: false
+                quest-category:
+                  size: 27
+                  slots:
+                    close: 22
+                """);
+
+        MenuLayoutConfig config = MenuLayoutConfig.load(mockPlugin(dataFolder));
+
+        assertTrue(!config.fillEmptySlots());
+    }
+
+    @Test
+    void reloadPicksUpAnEditMadeToTheOnDiskFileAfterInitialLoad(@TempDir Path tempDir) throws IOException {
+        Path dataFolder = tempDir.resolve("plugin-data");
+        writeMenusFile(dataFolder, """
+                fill-empty-slots: true
+                quest-category:
+                  size: 27
+                  slots:
+                    close: 22
+                """);
+        MenuLayoutConfig config = MenuLayoutConfig.load(mockPlugin(dataFolder));
+        assertEquals(22, config.resolveSlot("quest-category", "close", -1, 27));
+        assertTrue(config.fillEmptySlots());
+
+        // Simulates a technician editing menus.yml by hand and running /questadmin reload - no fresh
+        // MenuLayoutConfig instance, no server restart, just re-reading the same file in place.
+        writeMenusFile(dataFolder, """
+                fill-empty-slots: false
+                quest-category:
+                  size: 27
+                  slots:
+                    close: 8
+                """);
+        config.reload();
+
+        assertEquals(8, config.resolveSlot("quest-category", "close", -1, 27));
+        assertTrue(!config.fillEmptySlots());
+    }
+
     private static void writeMenusFile(Path dataFolder, String content) throws IOException {
         Path file = dataFolder.resolve("menus.yml");
         Files.createDirectories(file.getParent());

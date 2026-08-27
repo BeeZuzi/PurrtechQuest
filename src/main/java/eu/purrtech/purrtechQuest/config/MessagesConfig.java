@@ -22,6 +22,11 @@ import java.util.Map;
  * {@link #BUNDLED_LOCALES} ship inside the jar, but that's not a hard limit on what a server can offer its
  * players — any extra {@code lang/<code>.yml} an admin drops in gets picked up automatically (see
  * {@link #loadAdditionalLocales}), it just has no bundled resource to self-heal missing/stale keys against.
+ * <p>
+ * {@link #reload()} re-reads every locale file from disk in place, so a text edit takes effect on the next
+ * {@code /questadmin reload} rather than needing a full server restart — every command/GUI already holds a
+ * reference to the single shared instance of this class (see {@code PurrtechQuest}'s field), so reloading in
+ * place is enough; nothing needs to be told about it separately.
  */
 public final class MessagesConfig {
 
@@ -66,20 +71,28 @@ public final class MessagesConfig {
                     Map.entry("quest.gui-lore-objective-choice-line", "<yellow> - (volba) %type% %target%: %progress%/%amount%</yellow>"),
                     Map.entry("quest.gui-lore-objective-locked", "<dark_gray> - %type% %target% (nedostupné, splněna jiná volba)</dark_gray>")));
 
+    private final JavaPlugin plugin;
     private final Map<String, YamlConfiguration> byLocale = new HashMap<>();
     private final String defaultLocale;
 
-    private MessagesConfig(String defaultLocale) {
+    private MessagesConfig(JavaPlugin plugin, String defaultLocale) {
+        this.plugin = plugin;
         this.defaultLocale = defaultLocale;
     }
 
     public static MessagesConfig load(JavaPlugin plugin, String defaultLocale) {
-        MessagesConfig messages = new MessagesConfig(defaultLocale);
-        for (String locale : BUNDLED_LOCALES) {
-            messages.loadLocale(plugin, locale);
-        }
-        messages.loadAdditionalLocales(plugin);
+        MessagesConfig messages = new MessagesConfig(plugin, defaultLocale);
+        messages.reload();
         return messages;
+    }
+
+    /** Re-reads every {@code lang/*.yml} from disk, discarding whatever was previously loaded. See the class javadoc. */
+    public void reload() {
+        byLocale.clear();
+        for (String locale : BUNDLED_LOCALES) {
+            loadLocale(locale);
+        }
+        loadAdditionalLocales();
     }
 
     /**
@@ -89,7 +102,7 @@ public final class MessagesConfig {
      * unlike {@link #loadLocale}'s bundled locales, these get no self-healing merge/migration; they're
      * loaded exactly as the admin wrote them.
      */
-    private void loadAdditionalLocales(JavaPlugin plugin) {
+    private void loadAdditionalLocales() {
         File langDir = new File(plugin.getDataFolder(), "lang");
         File[] files = langDir.listFiles((dir, name) -> name.toLowerCase(Locale.ROOT).endsWith(".yml"));
         if (files == null) {
@@ -105,7 +118,7 @@ public final class MessagesConfig {
         }
     }
 
-    private void loadLocale(JavaPlugin plugin, String locale) {
+    private void loadLocale(String locale) {
         String resourcePath = "lang/" + locale + ".yml";
         File file = new File(plugin.getDataFolder(), resourcePath);
         boolean isNewFile = !file.exists();
@@ -121,8 +134,8 @@ public final class MessagesConfig {
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
         if (!isNewFile) {
-            mergeMissingKeys(plugin, resourcePath, file, config);
-            migrateStaleDefaults(plugin, resourcePath, locale, file, config);
+            mergeMissingKeys(resourcePath, file, config);
+            migrateStaleDefaults(resourcePath, locale, file, config);
         }
         byLocale.put(locale, config);
     }
@@ -134,7 +147,7 @@ public final class MessagesConfig {
      * keys missing from the on-disk file, leaving every key an admin already edited untouched, then
      * persists the result so this only has to run once per new key.
      */
-    private void mergeMissingKeys(JavaPlugin plugin, String resourcePath, File file, YamlConfiguration config) {
+    private void mergeMissingKeys(String resourcePath, File file, YamlConfiguration config) {
         try (InputStream in = plugin.getResource(resourcePath)) {
             if (in == null) {
                 return;
@@ -158,7 +171,7 @@ public final class MessagesConfig {
     }
 
     /** See {@link #STALE_DEFAULTS}. Runs after {@link #mergeMissingKeys} on every locale that has known stale keys. */
-    private void migrateStaleDefaults(JavaPlugin plugin, String resourcePath, String locale, File file, YamlConfiguration config) {
+    private void migrateStaleDefaults(String resourcePath, String locale, File file, YamlConfiguration config) {
         Map<String, String> staleDefaults = STALE_DEFAULTS.get(locale);
         if (staleDefaults == null) {
             return;

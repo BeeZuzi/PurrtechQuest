@@ -101,6 +101,27 @@ class MessagesConfigTest {
         assertEquals("Quests (DE)", messages.get("quest.gui-log-title", "de"));
     }
 
+    @Test
+    void reloadPicksUpAnEditMadeToTheOnDiskFileAfterInitialLoad(@TempDir Path tempDir) throws IOException {
+        Path dataFolder = tempDir.resolve("plugin-data");
+        writeLangFile(dataFolder, "cs", """
+                quest:
+                  gui-log-title: "Questy"
+                """);
+        MessagesConfig messages = MessagesConfig.load(mockPlugin(dataFolder), "cs");
+        assertEquals("Questy", messages.get("quest.gui-log-title", "cs"));
+
+        // Simulates a technician editing lang/cs.yml by hand and running /questadmin reload - no fresh
+        // MessagesConfig instance, no server restart, just re-reading the same files in place.
+        writeLangFile(dataFolder, "cs", """
+                quest:
+                  gui-log-title: "Úkoly"
+                """);
+        messages.reload();
+
+        assertEquals("Úkoly", messages.get("quest.gui-log-title", "cs"));
+    }
+
     private static void writeLangFile(Path dataFolder, String locale, String content) throws IOException {
         Path file = dataFolder.resolve("lang/" + locale + ".yml");
         Files.createDirectories(file.getParent());

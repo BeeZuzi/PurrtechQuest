@@ -91,17 +91,20 @@ final class QuestYamlMapper {
             throw new QuestStorageException("Reward entry is missing 'type': " + raw);
         }
         String rewardType = String.valueOf(rawType).toUpperCase();
+        String name = raw.get("name") == null ? null : String.valueOf(raw.get("name"));
         return switch (rewardType) {
-            case "MONEY" -> new QuestReward.Money(((Number) raw.get("amount")).doubleValue());
+            case "MONEY" -> new QuestReward.Money(((Number) raw.get("amount")).doubleValue(), name);
             case "ITEM" -> new QuestReward.Item(
                     String.valueOf(raw.get("material")),
                     raw.get("amount") instanceof Number n ? n.intValue() : 1,
-                    raw.get("custom-id") == null ? null : String.valueOf(raw.get("custom-id")));
-            case "COMMAND" -> new QuestReward.Command(String.valueOf(raw.get("command")));
-            case "EXPERIENCE" -> new QuestReward.Experience(((Number) raw.get("amount")).intValue());
+                    raw.get("custom-id") == null ? null : String.valueOf(raw.get("custom-id")),
+                    name);
+            case "COMMAND" -> new QuestReward.Command(String.valueOf(raw.get("command")), name);
+            case "EXPERIENCE" -> new QuestReward.Experience(((Number) raw.get("amount")).intValue(), name);
             case "PERMISSION" -> new QuestReward.Permission(
                     String.valueOf(raw.get("node")),
-                    raw.get("duration-seconds") instanceof Number n ? n.longValue() : null);
+                    raw.get("duration-seconds") instanceof Number n ? n.longValue() : null,
+                    name);
             default -> throw new QuestStorageException("Unknown reward type: " + rewardType);
         };
     }
@@ -210,6 +213,9 @@ final class QuestYamlMapper {
                     map.put("duration-seconds", permission.durationSeconds());
                 }
             }
+        }
+        if (reward.name() != null) {
+            map.put("name", reward.name());
         }
         return map;
     }

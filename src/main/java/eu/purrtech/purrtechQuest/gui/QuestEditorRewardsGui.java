@@ -68,7 +68,9 @@ public final class QuestEditorRewardsGui extends Gui {
                 if (event.isRightClick()) {
                     rewards.remove(index);
                     reopen();
+                    return;
                 }
+                promptRename(index);
             });
         }
 
@@ -132,10 +134,32 @@ public final class QuestEditorRewardsGui extends Gui {
             }
         }
 
+        // The admin-chosen name (what players see) leads; a reward with none - saved before names existed -
+        // keeps its type as the title and flags the missing name so it gets fixed.
+        Component title = reward.name() != null ? Component.text(reward.name(), NamedTextColor.GOLD) : name;
+        Component nameLine = reward.name() != null
+                ? messages.render("quest.editor-reward-name-line", player, Map.of("%name%", reward.name()))
+                : messages.render("quest.editor-reward-name-missing", player, Map.of());
         List<Component> lore = List.of(
+                nameLine,
                 messages.render(labelKey, player, placeholders),
+                messages.render("quest.editor-reward-rename-hint", player, Map.of()),
                 messages.render("quest.editor-remove-hint", player, Map.of()));
-        return GuiItems.icon(material, name, lore);
+        return GuiItems.icon(material, title, lore);
+    }
+
+    /** Renames the reward at {@code index} in place; blank is rejected and re-prompted, cancel changes nothing. */
+    private void promptRename(int index) {
+        context.chatInput().prompt(player, "quest.editor-prompt-reward-name", raw -> {
+            String newName = raw.trim();
+            if (newName.isEmpty()) {
+                player.sendMessage(context.messages().render("quest.editor-invalid-reward-name", player, Map.of()));
+                promptRename(index);
+                return;
+            }
+            rewards.set(index, rewards.get(index).withName(newName));
+            reopen();
+        }, this::reopen);
     }
 
     private Component typeName(String key) {

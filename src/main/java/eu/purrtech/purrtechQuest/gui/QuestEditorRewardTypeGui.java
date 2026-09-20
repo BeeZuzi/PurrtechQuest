@@ -91,8 +91,7 @@ public final class QuestEditorRewardTypeGui extends Gui {
                     invalidNumberThenRetry(() -> startWizard(Choice.MONEY));
                     return;
                 }
-                rewards.add(new QuestReward.Money(amount));
-                onBack.run();
+                addNamed(new QuestReward.Money(amount));
             }, this::reopen);
             case ITEM -> chatInput.prompt(player, "quest.editor-prompt-item-material", raw -> {
                 String normalized = raw.trim();
@@ -111,20 +110,17 @@ public final class QuestEditorRewardTypeGui extends Gui {
             }, this::reopen);
             case ITEM_FROM_HAND -> startItemFromHand();
             case COMMAND -> chatInput.prompt(player, "quest.editor-prompt-command", command -> {
-                rewards.add(new QuestReward.Command(command));
-                onBack.run();
+                addNamed(new QuestReward.Command(command));
             }, this::reopen);
             case EXPERIENCE -> chatInput.promptInt(player, "quest.editor-prompt-experience-amount", amount -> {
                 if (amount <= 0) {
                     invalidNumberThenRetry(() -> startWizard(Choice.EXPERIENCE));
                     return;
                 }
-                rewards.add(new QuestReward.Experience(amount));
-                onBack.run();
+                addNamed(new QuestReward.Experience(amount));
             }, this::reopen);
             case PERMISSION -> chatInput.prompt(player, "quest.editor-prompt-permission-node", node -> {
-                rewards.add(new QuestReward.Permission(node, null));
-                onBack.run();
+                addNamed(new QuestReward.Permission(node, null));
             }, this::reopen);
             case IMPORT -> new QuestEditorRewardImportGui(context, player, draft, rewards, onBack, this::reopen).open(player);
         }
@@ -143,11 +139,10 @@ public final class QuestEditorRewardTypeGui extends Gui {
                 return;
             }
             if (resolved.startsWith("ia:") || resolved.startsWith("oraxen:")) {
-                rewards.add(new QuestReward.Item("AIR", amount, resolved));
+                addNamed(new QuestReward.Item("AIR", amount, resolved));
             } else {
-                rewards.add(new QuestReward.Item(resolved, amount, null));
+                addNamed(new QuestReward.Item(resolved, amount, null));
             }
-            onBack.run();
         }, this::reopen);
     }
 
@@ -157,8 +152,7 @@ public final class QuestEditorRewardTypeGui extends Gui {
                 invalidNumberThenRetry(() -> promptItemAmount(material));
                 return;
             }
-            rewards.add(new QuestReward.Item(material.name(), amount, null));
-            onBack.run();
+            addNamed(new QuestReward.Item(material.name(), amount, null));
         }, this::reopen);
     }
 
@@ -168,7 +162,24 @@ public final class QuestEditorRewardTypeGui extends Gui {
                 invalidNumberThenRetry(() -> promptItemAmountCustom(customId));
                 return;
             }
-            rewards.add(new QuestReward.Item("AIR", amount, customId));
+            addNamed(new QuestReward.Item("AIR", amount, customId));
+        }, this::reopen);
+    }
+
+    /**
+     * Last step for every reward type: the admin must give it a display name (shown to players in the quest
+     * menu instead of a raw amount/material line) before it's actually added. Blank is rejected and
+     * re-prompted; cancelling drops the half-built reward and returns to this screen.
+     */
+    private void addNamed(QuestReward reward) {
+        context.chatInput().prompt(player, "quest.editor-prompt-reward-name", raw -> {
+            String name = raw.trim();
+            if (name.isEmpty()) {
+                player.sendMessage(context.messages().render("quest.editor-invalid-reward-name", player, Map.of()));
+                addNamed(reward);
+                return;
+            }
+            rewards.add(reward.withName(name));
             onBack.run();
         }, this::reopen);
     }

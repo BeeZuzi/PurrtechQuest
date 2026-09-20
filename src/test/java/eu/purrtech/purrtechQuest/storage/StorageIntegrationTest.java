@@ -79,8 +79,9 @@ class StorageIntegrationTest {
                 "Vytěž 10 kusů železné rudy.",
                 "mining",
                 List.of(new QuestObjective(ObjectiveType.COLLECT_ITEM, "RAW_IRON", 10)),
-                List.of(new QuestReward.Money(50.0), new QuestReward.Experience(20)),
-                List.of(new QuestRewardTier("purrtechquest.rank.vip", "VIP", List.of(new QuestReward.Money(25.0)))),
+                List.of(new QuestReward.Money(50.0, "Kapsa mincí"), new QuestReward.Experience(20)),
+                List.of(new QuestRewardTier("purrtechquest.rank.vip", "VIP",
+                        List.of(new QuestReward.Money(25.0).withName("VIP bonus")))),
                 List.of(),
                 false,
                 0,
@@ -99,6 +100,10 @@ class StorageIntegrationTest {
         assertEquals(quest.objectives(), roundTripped.objectives());
         assertEquals(quest.rewards(), roundTripped.rewards());
         assertEquals(quest.rewardTiers(), roundTripped.rewardTiers());
+        // Names survive the round trip; a reward saved without one (pre-names quest files) stays unnamed.
+        assertEquals("Kapsa mincí", roundTripped.rewards().get(0).name());
+        assertEquals(null, roundTripped.rewards().get(1).name());
+        assertEquals("VIP bonus", roundTripped.rewardTiers().get(0).rewards().get(0).name());
         assertEquals(quest.questGiver(), roundTripped.questGiver());
         assertTrue(roundTripped.autoTurnIn());
     }

@@ -114,6 +114,11 @@ repeatability/cooldown, auto-start, auto-turn-in, an optional NPC link, an optio
 editable through the `/questadmin create`/`edit` GUI. Objectives and rewards are added through their own
 sub-screens reachable from the main editor; nothing is written to disk until you hit Save.
 
+Every reward needs a **name** when you create it (e.g. "Stack of diamonds") — that's what players see in the
+quest's reward list instead of a raw amount/material line. Left-click a reward in the editor's reward list to
+rename it later. Rewards from quest files saved before names existed keep working; they just show the old
+automatic description until you give them a name.
+
 A quest's **category** is just whatever text you type in the editor's Category field — typing a name nobody
 has used before creates it, no separate "create category" step needed. Once at least one quest uses a
 category, it gets its own button in `/quest gui`; `/questadmin category <name>` then lets you configure that

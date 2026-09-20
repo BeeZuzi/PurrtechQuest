@@ -252,6 +252,9 @@ public final class QuestDetailGui extends Gui {
     }
 
     private Component rewardLine(QuestReward reward) {
+        if (reward.name() != null) {
+            return messages.render("quest.gui-lore-reward-named", player, Map.of("%name%", reward.name()));
+        }
         return switch (reward) {
             case QuestReward.Money money ->
                     messages.render("quest.gui-lore-reward-money", player, Map.of("%amount%", String.valueOf(money.amount())));
